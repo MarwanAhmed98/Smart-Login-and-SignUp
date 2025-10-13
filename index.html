@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Login System</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" href="./images/mobile-login-icon-editable-vector-removebg-preview.png">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <div class="auth-card">
+        <!-- Message Box (replaces alert()) -->
+        <div id="message-box" role="alert"></div>
+
+        <h2 class="text-center title" id="form-title">Signup Form</h2>
+
+        <!-- Toggle Buttons -->
+        <div class="toggle-group" id="toggle-buttons">
+            <button class="toggle-btn" id="login-tab">Login</button>
+            <button class="toggle-btn active" id="signup-tab">Signup</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div class="form-container hidden" id="login-form-container">
+            <form id="login-form">
+                <div class="mb-3">
+                    <input type="email" class="form-control" id="login-email" placeholder="Email Address" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" id="login-password" placeholder="Password" required>
+                </div>
+                <div class="d-flex justify-content-start mb-4">
+                    <!-- Updated: Link to new forgot password flow -->
+                    <a href="#" class="link-text text-decoration-none small" onclick="showForgotEmail(event)">Forgot
+                        Password?</a>
+                </div>
+                <div class="d-grid">
+                    <!-- Removed onclick to handle submission via event listener -->
+                    <button onclick="LoginForm()" type="button" class="btn btn-main btn-lg">Login</button>
+                </div>
+                <p class="text-center text-muted mt-4">
+                    Not a member? <a href="#" class="link-text text-decoration-none" onclick="showSignup(event)">Signup
+                        Now</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- SIGNUP FORM  -->
+        <div class="form-container" id="signup-form-container">
+            <form id="signup-form">
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="signup-username" placeholder="Full Name (Required)"
+                        required>
+                </div>
+                <div class="mb-3">
+                    <input type="email" class="form-control" id="signup-email" placeholder="Email Address (Required)"
+                        required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" id="signup-password" placeholder="Password (Required)"
+                        required>
+                </div>
+                <div class="mb-4">
+                    <input type="password" class="form-control" id="signup-confirmPassword"
+                        placeholder="Confirm password (Required)" required>
+                </div>
+                <div class="mb-3">
+                    <input type="tel" class="form-control" id="signup-phone" placeholder="Phone Number (Required)"
+                        required>
+                </div>
+                <div class="mb-4">
+                    <select class="form-select" id="signup-gender" required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                <div class="d-grid">
+                    <!-- Removed onclick to handle submission via event listener -->
+                    <button onclick="signup()" type="button" class="btn btn-main btn-lg">Signup</button>
+                </div>
+                <p class="text-center text-muted mt-4">
+                    Already a member? <a href="#" class="link-text text-decoration-none"
+                        onclick="showLogin(event)">Login</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- OTP Confirmation (For SIGNUP)-->
+        <div class="form-container hidden" id="otp-form-container">
+            <form id="otp-form">
+                <p class="text-center text-muted mb-4">A confirmation code was sent to the email address below.</p>
+                <div class="mb-3">
+                    <input type="email" class="form-control" id="otp-email" placeholder="Email Address" required
+                        readonly>
+                </div>
+                <div class="mb-4">
+                    <input type="text" class="form-control text-center fs-4 fw-bold" id="otp-input"
+                        placeholder="Enter 6-digit OTP" required maxlength="6" pattern="\d{6}">
+                </div>
+                <div class="d-grid">
+                    <!-- Removed onclick to handle submission via event listener -->
+                    <button onclick="ConfirOTPAccount()" type="button" class="btn btn-main btn-lg">Verify &
+                        Proceed</button>
+                </div>
+                <p class="text-center text-muted mt-4">
+                    Didn't receive code? <a onclick="ResendOTP(event)" href="#" class="link-text text-decoration-none"
+                        id="resend-otp-link">Resend
+                        OTP</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- NEW: FORGOT PASSWORD - Enter Email -->
+        <div class="form-container hidden" id="forgot-email-form-container">
+            <form id="forgot-email-form">
+                <p class="text-center text-muted mb-4">Enter your email to receive a password reset code.</p>
+                <div class="mb-3">
+                    <input type="email" class="form-control" id="forgot-email" placeholder="Email Address" required>
+                </div>
+                <div class="d-grid">
+                    <button onclick="SendForgotPasswordOTP()" type="button" class="btn btn-main btn-lg">Send Reset
+                        Code</button>
+                </div>
+                <p class="text-center text-muted mt-4">
+                    Remembered your password? <a href="#" class="link-text text-decoration-none"
+                        onclick="showLogin(event)">Login</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- NEW: VERIFY FORGOT CODE - Enter OTP -->
+        <div class="form-container hidden" id="verify-forget-code-container">
+            <form id="verify-forget-code-form">
+                <p class="text-center text-muted mb-4">Enter the code sent to this email to reset your password.</p>
+                <div class="mb-3">
+                    <input type="email" class="form-control" id="forgot-otp-email" placeholder="Email Address" required
+                        readonly>
+                </div>
+                <div class="mb-4">
+                    <input type="text" class="form-control text-center fs-4 fw-bold" id="forgot-otp-input"
+                        placeholder="Enter 6-digit Code" required maxlength="6" pattern="\d{6}">
+                </div>
+                <div class="d-grid">
+                    <button onclick="VerifyForgotPasswordCode()" type="button" class="btn btn-main btn-lg">Verify
+                        Code</button>
+                </div>
+                <p class="text-center text-muted mt-4">
+                    Didn't receive code? <a onclick="ResendForgotPasswordOTP(event)" href="#"
+                        class="link-text text-decoration-none" id="resend-forgot-otp-link">Resend Code</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- NEW: RESET PASSWORD -->
+        <div class="form-container hidden" id="reset-password-container">
+            <form id="reset-password-form">
+                <div class="mb-3">
+                    <input type="email" class="form-control" id="reset-email" placeholder="Email Address" required
+                        readonly>
+                </div>
+                <div class="mb-4">
+                    <input type="text" class="form-control text-center fs-4 fw-bold" id="reset-otp-hidden"
+                        placeholder="Enter 6-digit Code" required maxlength="6" pattern="\d{6}">
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" id="reset-password"
+                        placeholder="New Password (Required)" required>
+                </div>
+                <div class="mb-4">
+                    <input type="password" class="form-control" id="reset-confirmPassword"
+                        placeholder="Confirm New Password (Required)" required>
+                </div>
+                <div class="d-grid">
+                    <button onclick="ResetUserPassword()" type="button" class="btn btn-main btn-lg">Update
+                        Password</button>
+                </div>
+            </form>
+        </div>
+
+
+        <!-- DASHBOARD -->
+        <div class="form-container hidden" id="dashboard-container">
+            <div class="dashboard-content">
+                <div class="user-info">
+                    <div class="user-avatar-container default" id="dashboard-avatar-container">
+                        <!-- Camera Icon Overlay -->
+                        <div class="camera-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-camera">
+                                <path
+                                    d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                                </path>
+                                <circle cx="12" cy="13" r="4"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-details-section">
+                    <!-- Username -->
+                    <div class="detail-row">
+                        <div class="label">Username</div>
+                        <div class="value" id="dashboard-username"></div>
+                    </div>
+                    <!-- Email -->
+                    <div class="detail-row">
+                        <div class="label">Email</div>
+                        <div class="value" id="dashboard-email"></div>
+                    </div>
+                    <!-- Phone -->
+                    <div class="detail-row">
+                        <div class="label">Phone</div>
+                        <div class="value" id="dashboard-phone"></div>
+                    </div>
+                </div>
+
+                <div class="d-grid dashboard-footer">
+                    <button onclick="Logout()" class="btn btn-danger btn-lg" id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="./js/index.js"></script>
+</body>
+
+</html>
