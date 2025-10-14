@@ -12,14 +12,11 @@ const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
 const otpForm = document.getElementById('otp-form');
 const forgotEmailForm = document.getElementById('forgot-email-form');
-const verifyForgetCodeForm = document.getElementById('verify-forget-code-form');
-const resetPasswordForm = document.getElementById('reset-password-form');
 const messageBox = document.getElementById('message-box');
 const toggleButtons = document.getElementById('toggle-buttons');
 const dashboardUsername = document.getElementById('dashboard-username');
 const dashboardEmail = document.getElementById('dashboard-email');
 const dashboardPhone = document.getElementById('dashboard-phone');
-const logoutBtn = document.getElementById('logout-btn');
 const username = document.getElementById('signup-username');
 const email = document.getElementById('signup-email');
 const password = document.getElementById('signup-password');
@@ -33,6 +30,7 @@ const resetEmailInput = document.getElementById('reset-email');
 const resetOtpHidden = document.getElementById('reset-otp-hidden');
 const resetPasswordInput = document.getElementById('reset-password');
 const resetConfirmPasswordInput = document.getElementById('reset-confirmPassword');
+const Loading = document.querySelector('.Loading')
 let UserDataa;
 let tempUserEmail = '';
 /**
@@ -163,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => showSignup());
 // 1. SIGNUP Form Submission (Now goes to OTP)
 async function signup() {
     try {
+        Loading.classList.remove('d-none')
         let response = await fetch('https://thetically-impressible-arla.ngrok-free.dev/auth/signup/', {
             method: 'POST',
             headers: {
@@ -184,15 +183,18 @@ async function signup() {
         if (response.ok) {
             showOtpConfirmation();
             document.getElementById("otp-email").value = email.value;
-
             displayMessage('success', data.message || "Signup successful! Please verify your email with the OTP.");
         } else {
             displayMessage('error', data.err_message);
         }
+        Loading.classList.add('d-none')
 
     } catch (error) {
         console.error("Error:", error);
         displayMessage('error', "Something went wrong. Try again later!");
+    }
+    finally {
+        Loading.classList.add('d-none');
     }
 }
 // 2. OTP Form Submission (New Handler)
@@ -201,6 +203,7 @@ async function ConfirOTPAccount() {
     const otpCode = document.getElementById("otp-input").value;
 
     try {
+        Loading.classList.remove('d-none')
         let response = await fetch('https://thetically-impressible-arla.ngrok-free.dev/auth/confirm-email', {
             method: 'PATCH',
             headers: {
@@ -229,11 +232,15 @@ async function ConfirOTPAccount() {
         console.error("Error:", error);
         displayMessage('error', "Something went wrong. Try again!");
     }
+    finally {
+        Loading.classList.add('d-none');
+    }
 }
 // Resend OTP Handler
 async function ResendOTP() {
     const otpEmail = document.getElementById("otp-email").value;
     try {
+        Loading.classList.remove('d-none')
         let response = await fetch('https://thetically-impressible-arla.ngrok-free.dev/auth/resend-otp', {
             method: 'PATCH',
             headers: {
@@ -258,12 +265,16 @@ async function ResendOTP() {
         console.error("Error:", error);
         displayMessage('error', "Something went wrong. Try again!");
     }
+    finally {
+        Loading.classList.add('d-none');
+    }
 }
 // 3. LOGIN Form Submission
 async function LoginForm() {
     const Loginemail = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
     try {
+        Loading.classList.remove('d-none')
         let response = await fetch("https://thetically-impressible-arla.ngrok-free.dev/auth/login", {
             method: "POST",
             headers: {
@@ -291,9 +302,13 @@ async function LoginForm() {
         console.error("Error:", error);
         displayMessage('error', data.err_message);
     }
+    finally {
+        Loading.classList.add('d-none');
+    }
 }
 async function GetProfile() {
     try {
+        Loading.classList.remove('d-none')
         let token = localStorage.getItem("userToken");
         let response = await fetch("https://thetically-impressible-arla.ngrok-free.dev/users/", {
             method: "GET",
@@ -315,11 +330,15 @@ async function GetProfile() {
     } catch (error) {
         console.error("Error:", error);
     }
+    finally {
+        Loading.classList.add('d-none');
+    }
 }
 // 4. Send Forgot Password OTP
 async function SendForgotPasswordOTP() {
     tempUserEmail = forgotEmailInput.value.trim();
     try {
+        Loading.classList.remove('d-none')
         let response = await fetch('https://thetically-impressible-arla.ngrok-free.dev/auth/forgot-password', {
             method: 'PATCH',
             headers: {
@@ -343,13 +362,17 @@ async function SendForgotPasswordOTP() {
         console.error("Error:", error);
         displayMessage('error', "Something went wrong. Try again!");
     }
+    finally {
+        // Hide Loading after request finishes
+        Loading.classList.add('d-none');
+    }
 }
 // 5. Verify Forgot Password Code
 async function VerifyForgotPasswordCode() {
     const forgotOtpEmail = forgotOtpEmailInput.value;
     const otpCode = forgotOtpInput.value;
     try {
-        // Mock API call to verify OTP
+        Loading.classList.remove('d-none')
         let response = await fetch('https://thetically-impressible-arla.ngrok-free.dev/auth/verify-forget-code', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -373,10 +396,14 @@ async function VerifyForgotPasswordCode() {
         console.error("Error:", error);
         displayMessage('error', "Something went wrong. Try again!");
     }
+    finally {
+        Loading.classList.add('d-none');
+    }
 }
 // Helper function for resending OTP
 async function fetchResendOTP(email) {
     try {
+        Loading.classList.remove('d-none')
         let response = await fetch('https://thetically-impressible-arla.ngrok-free.dev/auth/resend-otp', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -395,6 +422,9 @@ async function fetchResendOTP(email) {
         console.error("Error:", error);
         displayMessage('error', "Something went wrong. Try again!");
     }
+    finally {
+        Loading.classList.add('d-none');
+    }
 }
 // 6. Reset Password
 async function ResetUserPassword() {
@@ -406,6 +436,7 @@ async function ResetUserPassword() {
         return displayMessage('error', "New password and confirmation do not match.");
     }
     try {
+        Loading.classList.remove('d-none')
         let response = await fetch('https://thetically-impressible-arla.ngrok-free.dev/auth/reset-password', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -433,10 +464,14 @@ async function ResetUserPassword() {
         console.error("Error:", error);
         displayMessage('error', "Something went wrong during password reset. Try again!");
     }
+    finally {
+        Loading.classList.add('d-none');
+    }
 }
 // 7. LOGOUT Handler
 async function Logout() {
     try {
+        Loading.classList.remove('d-none')
         let token = localStorage.getItem("userToken");
 
         let response = await fetch("https://thetically-impressible-arla.ngrok-free.dev/users/logout", {
@@ -467,6 +502,9 @@ async function Logout() {
 
     } catch (error) {
         console.error("Error:", error);
+    }
+    finally {
+        Loading.classList.add('d-none');
     }
 }
 
