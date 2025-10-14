@@ -222,7 +222,6 @@ async function ConfirOTPAccount() {
             showLogin(null);
             displayMessage('success', data.message || "Email verified successfully!");
             loginForm.querySelector('#login-email').value = otpEmail;
-            loginForm.querySelector('#login-password').value = password.value;
 
         } else {
             displayMessage('error', data.err_message || "Invalid OTP!");
